@@ -1,0 +1,19 @@
+{
+  "name": "cursor-open-project-demo",
+  "version": "1.0.0",
+  "description": "演示 Cursor 打开项目时的执行流程",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "postinstall": "node on-open.js",
+    "on-open": "node on-open.js"
+  },
+  "keywords": [
+    "cursor",
+    "vscode",
+    "workspace"
+  ],
+  "author": "",
+  "license": "MIT"
+}
+
